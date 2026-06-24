@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+        @apply font-sans overflow-x-hidden min-h-screen bg-bg-primary text-text-primary;
+    }
+
+    #root {
+        @apply min-h-screen;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: theme('colors.bg-primary');
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: theme('colors.accent-orange');
+        border-radius: 20px;
+    }
+}
