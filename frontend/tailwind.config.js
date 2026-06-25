@@ -34,7 +34,8 @@ module.exports = {
         'sm': '10px',
       },
       fontFamily: {
-        sans: ['Inter', 'Segoe UI', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+        loading: ['Marcellus', 'serif'],
       },
       animation: {
         'fade-slide-up': 'fadeSlideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards',
