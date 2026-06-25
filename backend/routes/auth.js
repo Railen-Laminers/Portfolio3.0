@@ -4,13 +4,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
     const { identifier, password } = req.body;
     console.log(`🔐 Login attempt: ${identifier}`);
 
     try {
-        // Find user by username or email
         const user = await User.findOne({
             $or: [{ username: identifier }, { email: identifier }],
         });
@@ -19,7 +17,6 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         console.log(`✅ Password match: ${isMatch}`);
 
@@ -27,7 +24,6 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate JWT
         const token = jwt.sign(
             { userId: user._id, role: user.role },
             process.env.JWT_SECRET,

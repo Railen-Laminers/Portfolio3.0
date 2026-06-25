@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // On mount, restore from localStorage
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         const storedToken = localStorage.getItem('token');
@@ -25,11 +24,9 @@ export const AuthProvider = ({ children }) => {
                 password,
             });
             const { token, user: userData } = response.data;
-
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(userData));
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
             setUser(userData);
             return { success: true };
         } catch (error) {
@@ -45,10 +42,16 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const updateUser = (updatedUser) => {
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+    };
+
     const value = {
         user,
         login,
         logout,
+        updateUser,
         loading,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',

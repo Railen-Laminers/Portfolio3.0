@@ -11,7 +11,6 @@ const seedAdmin = async () => {
         const adminUsername = 'admin';
         const plainPassword = 'admin123';
 
-        // Look for existing admin
         const existing = await User.findOne({
             $or: [{ email: adminEmail }, { username: adminUsername }],
         });
@@ -19,7 +18,6 @@ const seedAdmin = async () => {
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
         if (existing) {
-            // Force update password and role
             existing.password = hashedPassword;
             existing.role = 'admin';
             await existing.save();

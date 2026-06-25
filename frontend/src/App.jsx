@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ReactLenis } from 'lenis/react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { PortfolioProvider } from './context/PortfolioContext';
 import ProfileHeader from './components/sections/ProfileHeader';
 import ProfileSection from './components/sections/ProfileSection';
 import Sidebar from './components/sections/Sidebar';
@@ -8,14 +9,15 @@ import Feed from './components/sections/Feed';
 import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/Navbar';
 import LoginModal from './components/LoginModal';
+import EditProfileModal from './components/admin/EditProfileModal';
 
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRevealed, setIsRevealed] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  // When loading finishes, trigger reveal
   useEffect(() => {
     if (!isLoading) {
       const timer = setTimeout(() => setIsRevealed(true), 150);
@@ -23,18 +25,21 @@ function AppContent() {
     }
   }, [isLoading]);
 
-  // Prevent login modal if already logged in
   const handleLoginClick = () => {
     if (!isAuthenticated) {
       setIsLoginModalOpen(true);
     }
-    // Optionally: show a toast "You are already logged in"
+  };
+
+  const handleEditProfile = () => {
+    setIsEditModalOpen(true);
   };
 
   return (
     <>
       {isLoading && <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />}
 
+      {/* Main content inside Lenis */}
       <ReactLenis
         root
         options={{
@@ -46,7 +51,6 @@ function AppContent() {
           infinite: false,
         }}
       >
-        {/* Navbar */}
         {!isLoading && (
           <div
             className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-out ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
@@ -57,7 +61,6 @@ function AppContent() {
           </div>
         )}
 
-        {/* Main content */}
         <div
           className={`relative z-10 max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 pb-[60px] min-h-screen ${!isLoading ? 'pt-20' : 'pt-0'
             }`}
@@ -77,7 +80,7 @@ function AppContent() {
               }`}
             style={{ transitionDelay: '300ms' }}
           >
-            <ProfileSection />
+            <ProfileSection onEditProfile={handleEditProfile} />
           </div>
 
           <hr className="my-6 border-t border-border-glass" />
@@ -104,9 +107,15 @@ function AppContent() {
         </div>
       </ReactLenis>
 
+      {/* === Modals rendered OUTSIDE Lenis === */}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+      />
+
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
       />
     </>
   );
@@ -115,7 +124,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <PortfolioProvider>
+        <AppContent />
+      </PortfolioProvider>
     </AuthProvider>
   );
 }
