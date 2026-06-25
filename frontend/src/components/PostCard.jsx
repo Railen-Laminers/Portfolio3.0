@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IconMap, IconHeart, IconComment, IconShare } from './common/Icons';
+import { useAuth } from '../context/AuthContext';
 
 const PostActions = ({ likes: initialLikes, comments }) => {
     const [liked, setLiked] = useState(false);
@@ -16,10 +17,12 @@ const PostActions = ({ likes: initialLikes, comments }) => {
         <div className="flex gap-3 sm:gap-5 pt-3 border-t border-white/5">
             <button
                 onClick={handleLike}
-                className={`bg-none border-none text-xs sm:text-sm cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-full transition-all duration-300 font-sans text-muted hover:text-accent-orange hover:bg-accent-orange/5 ${liked ? 'text-accent-orange' : ''}`}
+                className={`bg-none border-none text-xs sm:text-sm cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-full transition-all duration-300 font-sans text-muted hover:text-accent-orange hover:bg-accent-orange/5 ${liked ? 'text-accent-orange' : ''
+                    }`}
             >
                 <IconHeart
-                    className={`w-4 h-4 sm:w-[18px] sm:h-[18px] flex-shrink-0 stroke-current ${liked ? 'fill-accent-orange stroke-accent-orange' : ''}`}
+                    className={`w-4 h-4 sm:w-[18px] sm:h-[18px] flex-shrink-0 stroke-current ${liked ? 'fill-accent-orange stroke-accent-orange' : ''
+                        }`}
                 />
                 <span className="min-w-4 text-left">{count}</span>
             </button>
@@ -36,6 +39,7 @@ const PostActions = ({ likes: initialLikes, comments }) => {
 
 const PostCard = ({ post, delay = 0 }) => {
     const cardRef = useRef(null);
+    const { isAdmin } = useAuth();
 
     useEffect(() => {
         if (cardRef.current) {
@@ -104,6 +108,14 @@ const PostCard = ({ post, delay = 0 }) => {
                         <span>Launch: {post.launch}</span>
                     </div>
                 </>
+            )}
+
+            {/* Admin actions – Phase 2 ready */}
+            {isAdmin && (
+                <div className="flex gap-3 mt-3 pt-2 border-t border-white/5">
+                    <button className="text-xs text-accent-orange hover:underline">Edit</button>
+                    <button className="text-xs text-red-400 hover:underline">Delete</button>
+                </div>
             )}
 
             <PostActions likes={post.likes} comments={post.comments} />

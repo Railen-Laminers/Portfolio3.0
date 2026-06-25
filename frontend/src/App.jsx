@@ -1,6 +1,6 @@
-// App.jsx
 import React, { useState, useEffect } from 'react';
 import { ReactLenis } from 'lenis/react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ProfileHeader from './components/sections/ProfileHeader';
 import ProfileSection from './components/sections/ProfileSection';
 import Sidebar from './components/sections/Sidebar';
@@ -9,20 +9,27 @@ import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/Navbar';
 import LoginModal from './components/LoginModal';
 
-function App() {
+function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRevealed, setIsRevealed] = useState(false);
-
-  // State for login modal visibility
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
-  // When loading finishes, trigger the reveal sequence after a tiny pause
+  // When loading finishes, trigger reveal
   useEffect(() => {
     if (!isLoading) {
       const timer = setTimeout(() => setIsRevealed(true), 150);
       return () => clearTimeout(timer);
     }
   }, [isLoading]);
+
+  // Prevent login modal if already logged in
+  const handleLoginClick = () => {
+    if (!isAuthenticated) {
+      setIsLoginModalOpen(true);
+    }
+    // Optionally: show a toast "You are already logged in"
+  };
 
   return (
     <>
@@ -39,24 +46,22 @@ function App() {
           infinite: false,
         }}
       >
-        {/* Navbar – hidden while loading, reveals with its own delay */}
+        {/* Navbar */}
         {!isLoading && (
           <div
             className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-out ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
               }`}
             style={{ transitionDelay: '0ms' }}
           >
-            {/* pass the login handler */}
-            <Navbar onLoginClick={() => setIsLoginModalOpen(true)} />
+            <Navbar onLoginClick={handleLoginClick} />
           </div>
         )}
 
-        {/* Main content container */}
+        {/* Main content */}
         <div
           className={`relative z-10 max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 pb-[60px] min-h-screen ${!isLoading ? 'pt-20' : 'pt-0'
             }`}
         >
-          {/* ProfileHeader */}
           <div
             className={`transition-all duration-700 ease-out ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
@@ -67,7 +72,6 @@ function App() {
 
           <hr className="my-6 border-t border-border-glass" />
 
-          {/* ProfileSection */}
           <div
             className={`transition-all duration-700 ease-out ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
@@ -78,9 +82,7 @@ function App() {
 
           <hr className="my-6 border-t border-border-glass" />
 
-          {/* Sidebar + Feed row */}
           <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 mt-2 items-center lg:items-start">
-            {/* Sidebar */}
             <div
               className={`w-full lg:w-auto transition-all duration-700 ease-out ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
@@ -89,7 +91,6 @@ function App() {
               <Sidebar />
             </div>
 
-            {/* Feed */}
             <main className="flex-1 min-w-0 w-full">
               <div
                 className={`transition-all duration-700 ease-out ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -103,12 +104,19 @@ function App() {
         </div>
       </ReactLenis>
 
-      {/* Render the login modal */}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
       />
     </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

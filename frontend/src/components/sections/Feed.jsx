@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PostCard from '../PostCard';
 import PostCardSkeleton from '../PostCardSkeleton';
+import { useAuth } from '../../context/AuthContext';
 
-// Simulate fetching posts (unchanged)
+// Simulate fetching posts
 const fetchPosts = () => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -39,6 +40,7 @@ const fetchPosts = () => {
 const Feed = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { isAdmin } = useAuth();
 
     useEffect(() => {
         fetchPosts().then((data) => {
@@ -76,9 +78,11 @@ const Feed = () => {
                     <button className="px-3 sm:px-4 py-1.5 rounded-full text-xs border border-border-glass transition-all duration-300 font-sans cursor-pointer bg-bg-glass text-muted backdrop-blur-sm hover:bg-accent-orange/10 hover:border-accent-orange/20 hover:text-accent-orange">
                         filter
                     </button>
-                    <button className="px-3 sm:px-4 py-1.5 rounded-full text-xs border border-border-glass transition-all duration-300 font-sans cursor-pointer bg-bg-glass text-muted backdrop-blur-sm hover:bg-accent-orange/10 hover:border-accent-orange/20 hover:text-accent-orange">
-                        + new
-                    </button>
+                    {isAdmin && (
+                        <button className="px-3 sm:px-4 py-1.5 rounded-full text-xs border border-border-glass transition-all duration-300 font-sans cursor-pointer bg-bg-glass text-muted backdrop-blur-sm hover:bg-accent-orange/10 hover:border-accent-orange/20 hover:text-accent-orange">
+                            + new
+                        </button>
+                    )}
                 </div>
             </div>
 
